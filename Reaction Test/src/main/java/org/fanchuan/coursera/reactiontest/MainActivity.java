@@ -1,12 +1,14 @@
 package org.fanchuan.coursera.reactiontest;
 
-import java.util.Random;
 import android.app.Activity;
-import android.os.Handler;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
+
+import java.util.Random;
 
 public class MainActivity extends Activity {
 
@@ -15,13 +17,13 @@ public class MainActivity extends Activity {
     final short STATE_DELAY = 1; // User pressed begin test button, random delay
     final short STATE_TESTING = 2; // Reaction timer is running, waiting for button press
     final short STATE_FINISHED = 3; // Congratulate user
-    long timeTestStart = 0;
     final Runnable UPDATE_UI_STATUS = new Runnable() {
         public void run() {
             final TextView VW_STATUS = (TextView) findViewById(R.id.status);
             VW_STATUS.setText(stateDescriptions[activityState]);
         }
     };
+    long timeTestStart = 0;
     short activityState = STATE_IDLE;
     String[] stateDescriptions;
     private Handler handlerTest = new Handler(); //must maintain handler state, used for reaction timing
@@ -67,51 +69,48 @@ public class MainActivity extends Activity {
     }
     */
 
-    /*
-    private void startTest() {
-        Long currentTime = SystemClock.elapsedRealtime();
-        //in progress
+    public void clickHelp(View vw) {
+        Dialog help = new Dialog(this);
+        help.setContentView(R.layout.dialog_help);
+        help.show();
     }
-    */
 
     public void clickGoButton(View vw) {
 
         final Runnable BEGIN_TEST = new Runnable() {
             public void run() {
-            activityState = STATE_TESTING;
-            timeTestStart = SystemClock.elapsedRealtime();
-            handlerTest.post(UPDATE_UI_STATUS);
+                activityState = STATE_TESTING;
+                timeTestStart = SystemClock.elapsedRealtime();
+                handlerTest.post(UPDATE_UI_STATUS);
             }
         };
-        final Runnable END_TEST = new Runnable() {
-            public void run() {
-                activityState = STATE_FINISHED;
-                long timeElapsed = SystemClock.elapsedRealtime() - timeTestStart;
-                final TextView VW_STATUS = (TextView) findViewById(R.id.status);
-                String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
-                    VW_STATUS.setText(reactionTimeText);
-            }
-        };
+        final Runnable END_TEST = new
+                Runnable() {
+                    public void run() {
+                        activityState = STATE_FINISHED;
+                        long timeElapsed = SystemClock.elapsedRealtime() - timeTestStart;
+                        final TextView VW_STATUS = (TextView) findViewById(R.id.status);
+                        String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
+                        VW_STATUS.setText(reactionTimeText);
+                    }
+                };
 
         if (activityState == STATE_IDLE) {
             activityState = STATE_DELAY;
             handlerTest.post(UPDATE_UI_STATUS);
             int flagDelay_ms = Math.round(1500 * randTimer.nextFloat() + 1000);
             handlerTest.postDelayed(BEGIN_TEST, flagDelay_ms);
-        }
-        else if(activityState == STATE_DELAY) {
+        } else if (activityState == STATE_DELAY) {
             //If user clicks during the delay period, that resets the test.
             handlerTest.removeCallbacksAndMessages(null);
             activityState = STATE_IDLE;
             handlerTest.post(UPDATE_UI_STATUS);
-        }
-        else if(activityState == STATE_TESTING) {
+        } else if (activityState == STATE_TESTING) {
             //Reaction testing in progress
             handlerTest.post(END_TEST);
-        }
-        else {
+        } else {
             activityState = STATE_IDLE;
             handlerTest.post(UPDATE_UI_STATUS);
         }
-    };
+    }
 }

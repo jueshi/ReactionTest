@@ -3,15 +3,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.fanchuan.coursera.reactiontest.MainActivity" >
+    tools:context="org.fanchuan.coursera.reactiontest.MainActivity">
 
-    <TextView
-        android:id="@+id/instructions"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/button_instructions"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/instructions"
+        android:text="@string/help_button"
+        android:onClick="clickHelp"
         android:textSize="20sp"
-        android:layout_weight="3"/>
+        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/status"
@@ -20,7 +21,7 @@
         android:textSize="32sp"
         android:text="STATUS"
         android:gravity="center_horizontal"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/go_button"
@@ -28,6 +29,6 @@
         android:layout_height="wrap_content"
         android:onClick="clickGoButton"
         android:text="@string/go_button"
-        android:layout_weight="2"/>
+        android:layout_weight="3" />
 
 </LinearLayout>
