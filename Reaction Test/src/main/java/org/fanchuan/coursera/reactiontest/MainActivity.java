@@ -95,22 +95,27 @@ public class MainActivity extends Activity {
                     }
                 };
 
-        if (activityState == STATE_IDLE) {
-            activityState = STATE_DELAY;
-            handlerTest.post(UPDATE_UI_STATUS);
-            int flagDelay_ms = Math.round(1500 * randTimer.nextFloat() + 1000);
-            handlerTest.postDelayed(BEGIN_TEST, flagDelay_ms);
-        } else if (activityState == STATE_DELAY) {
-            //If user clicks during the delay period, that resets the test.
-            handlerTest.removeCallbacksAndMessages(null);
-            activityState = STATE_IDLE;
-            handlerTest.post(UPDATE_UI_STATUS);
-        } else if (activityState == STATE_TESTING) {
-            //Reaction testing in progress
-            handlerTest.post(END_TEST);
-        } else {
-            activityState = STATE_IDLE;
-            handlerTest.post(UPDATE_UI_STATUS);
+        switch (activityState) {
+            case STATE_IDLE:
+                activityState = STATE_DELAY;
+                handlerTest.post(UPDATE_UI_STATUS);
+                int flagDelay_ms = Math.round(1500 * randTimer.nextFloat() + 1000);
+                handlerTest.postDelayed(BEGIN_TEST, flagDelay_ms);
+                break;
+            case STATE_DELAY:
+                //If user clicks during the delay period, that resets the test.
+                handlerTest.removeCallbacksAndMessages(null);
+                activityState = STATE_IDLE;
+                handlerTest.post(UPDATE_UI_STATUS);
+                break;
+            case STATE_TESTING:
+                //Reaction testing in progress
+                handlerTest.post(END_TEST);
+                break;
+            case STATE_FINISHED:
+                activityState = STATE_IDLE;
+                handlerTest.post(UPDATE_UI_STATUS);
+                break;
         }
     }
 }
