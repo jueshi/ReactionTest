@@ -5,15 +5,6 @@
     android:layout_height="match_parent"
     tools:context="org.fanchuan.coursera.reactiontest.MainActivity">
 
-    <Button
-        android:id="@+id/button_instructions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/help_button"
-        android:layout_gravity="right"
-        android:onClick="clickHelp"
-        android:textSize="20sp" />
-
     <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
@@ -21,7 +12,7 @@
         android:textSize="32sp"
         android:text="STATUS"
         android:gravity="center_horizontal"
-        android:layout_weight="0.2" />
+        android:layout_weight="0.15" />
 
     <Button
         android:id="@+id/go_button"
@@ -29,6 +20,6 @@
         android:layout_height="wrap_content"
         android:onClick="clickGoButton"
         android:text="@string/go_button"
-        android:layout_weight="0.7" />
+        android:layout_weight="0.85" />
 
 </LinearLayout>

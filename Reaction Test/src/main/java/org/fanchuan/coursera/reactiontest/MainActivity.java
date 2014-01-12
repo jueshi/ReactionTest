@@ -1,16 +1,18 @@
 package org.fanchuan.coursera.reactiontest;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     //The activity can be in one of three states
     final short STATE_IDLE = 0; // Idle, waiting for user to press button
@@ -47,11 +49,11 @@ public class MainActivity extends Activity {
         */
     }
 
-    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -62,14 +64,15 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.help_action) {
+            showHelp();
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-    */
 
-    public void clickHelp(View vw) {
+    }
+
+    public void showHelp() {
         Dialog help = new Dialog(this);
         help.setContentView(R.layout.dialog_help);
         help.show();
@@ -85,6 +88,7 @@ public class MainActivity extends Activity {
             }
         };
         final Runnable END_TEST = new
+
                 Runnable() {
                     public void run() {
                         activityState = STATE_FINISHED;
