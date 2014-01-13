@@ -8,7 +8,7 @@
     <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textSize="32sp"
         android:text="STATUS"
         android:gravity="center_horizontal"
@@ -17,7 +17,7 @@
     <Button
         android:id="@+id/go_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:onClick="clickGoButton"
         android:text="@string/go_button"
         android:layout_weight="0.85" />
