@@ -1,10 +1,14 @@
 package org.fanchuan.coursera.reactiontest;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +76,22 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    public void showEndTestNotification(String reactionTimeText) {
+        /* Generates a sample notification, notifying of the reaction time.
+        If there is a problem with notifications we will skip it */
+        try {
+            NotificationCompat.Builder notifyReactionTimeBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentText(reactionTimeText)
+                    .setContentTitle(this.getString(R.string.app_name));
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.notify(0, notifyReactionTimeBuilder.build());
+        } catch (Exception e) {
+            Log.e(e.getMessage(), e.toString());
+        }
+    }
+
+
     public void showHelp() {
         Dialog help = new Dialog(this);
         help.setContentView(R.layout.dialog_help);
@@ -96,6 +116,7 @@ public class MainActivity extends ActionBarActivity {
                         final TextView VW_STATUS = (TextView) findViewById(R.id.status);
                         String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
                         VW_STATUS.setText(reactionTimeText);
+                        showEndTestNotification(reactionTimeText);
                     }
                 };
 
