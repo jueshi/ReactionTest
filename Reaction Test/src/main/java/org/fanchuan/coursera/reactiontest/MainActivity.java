@@ -71,9 +71,10 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.help_action) {
             showHelp();
             return true;
+        } else {
+            showSettings();
+            return true;
         }
-        return super.onOptionsItemSelected(item);
-
     }
 
     public void showEndTestNotification(String reactionTimeText) {
@@ -95,6 +96,12 @@ public class MainActivity extends ActionBarActivity {
     public void showHelp() {
         Dialog help = new Dialog(this);
         help.setContentView(R.layout.dialog_help);
+        help.show();
+    }
+
+    public void showSettings() {
+        Dialog help = new Dialog(this);
+        help.setContentView(R.layout.dialog_settings);
         help.show();
     }
 
