@@ -18,6 +18,8 @@ import java.util.Random;
 
 public class MainActivity extends ActionBarActivity {
 
+    final String TAG = MainActivity.class.getSimpleName();
+
     //The activity can be in one of three states
     final short STATE_IDLE = 0; // Idle, waiting for user to press button
     final short STATE_DELAY = 1; // User pressed begin test button, random delay
@@ -88,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(0, notifyReactionTimeBuilder.build());
         } catch (Exception e) {
-            Log.e(e.getMessage(), e.toString());
+            Log.e(TAG, "Unable to display score notification", e);
         }
     }
 
