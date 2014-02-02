@@ -6,11 +6,20 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/bestTime"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:textSize="22sp"
+        android:text="--"
+        android:gravity="right"
+        android:layout_weight="0.10" />
+
+    <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:textSize="32sp"
-        android:text="STATUS"
+        android:text="--"
         android:gravity="center_horizontal"
         android:layout_weight="0.15" />
 
@@ -20,6 +29,6 @@
         android:layout_height="0dp"
         android:onClick="clickGoButton"
         android:text="@string/go_button"
-        android:layout_weight="0.85" />
+        android:layout_weight="0.75" />
 
 </LinearLayout>

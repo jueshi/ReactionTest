@@ -3,6 +3,7 @@ package org.fanchuan.coursera.reactiontest;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -19,21 +20,24 @@ import java.util.Random;
 public class MainActivity extends ActionBarActivity {
 
     final String TAG = MainActivity.class.getSimpleName();
-
     //The activity can be in one of three states
     final short STATE_IDLE = 0; // Idle, waiting for user to press button
+    private short activityState = STATE_IDLE;
     final short STATE_DELAY = 1; // User pressed begin test button, random delay
     final short STATE_TESTING = 2; // Reaction timer is running, waiting for button press
     final short STATE_FINISHED = 3; // Congratulate user
+    private final String keyBestTime = "keyBestTime";
+    String[] stateDescriptions;
     final Runnable UPDATE_UI_STATUS = new Runnable() {
         public void run() {
             final TextView VW_STATUS = (TextView) findViewById(R.id.status);
             VW_STATUS.setText(stateDescriptions[activityState]);
         }
     };
-    long timeTestStart = 0;
-    short activityState = STATE_IDLE;
-    String[] stateDescriptions;
+    //Persistent items saved to preferences; currently best reaction time only
+    private SharedPreferences prefs;
+    private long bestTime;
+    private long timeTestStart = 0;
     private Handler handlerTest = new Handler(); //must maintain handler state, used for reaction timing
     private Random randTimer = new Random();
 
@@ -41,6 +45,14 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Retrieve preferences (saved best reaction time)
+        prefs = getPreferences(MODE_PRIVATE);
+        bestTime = prefs.getLong(keyBestTime, 10000); //default reaction time if not saved
+        Log.d(TAG, "bestTime: " + bestTime);
+        showBestTime();
+
+        //Each state has its own unique text description
         stateDescriptions = getResources().getStringArray(R.array.state_descriptions);
         handlerTest.post(UPDATE_UI_STATUS);
 
@@ -81,7 +93,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void showEndTestNotification(String reactionTimeText) {
         /* Generates a sample notification, notifying of the reaction time.
-        If there is a problem with notifications we will skip it */
+        Worked in several Genymotion API18 emulators and Moto Xoom tablet but crashed on LG API10 phone (??) */
         try {
             NotificationCompat.Builder notifyReactionTimeBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.ic_launcher)
@@ -94,7 +106,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     public void showHelp() {
         Dialog help = new Dialog(this);
         help.setContentView(R.layout.dialog_help);
@@ -105,6 +116,25 @@ public class MainActivity extends ActionBarActivity {
         Dialog help = new Dialog(this);
         help.setContentView(R.layout.dialog_settings);
         help.show();
+    }
+
+    private void showBestTime() {
+        // If test complete, run submitLatestTime() first; Assumes bestTime is already populated
+        TextView vw = (TextView) findViewById(R.id.bestTime);
+        String bestTimeText = String.format(getResources().getString(R.string.bestTime), bestTime);
+        vw.setText(bestTimeText);
+    }
+
+    private void submitLatestTime(long latestTime) {
+        //Check latestTime versus bestTime, if so, update bestTime and persist in preferences
+        if (latestTime < bestTime) {
+            bestTime = latestTime;
+            Log.d(TAG, "submitLatestTime: " + latestTime);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putLong(keyBestTime, latestTime);
+            editor.commit();
+            Log.d(TAG, "Committed to preferences latestTime: " + latestTime);
+        }
     }
 
     public void clickGoButton(View vw) {
@@ -124,6 +154,8 @@ public class MainActivity extends ActionBarActivity {
                         long timeElapsed = SystemClock.elapsedRealtime() - timeTestStart;
                         final TextView VW_STATUS = (TextView) findViewById(R.id.status);
                         String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
+                        submitLatestTime(timeElapsed);
+                        showBestTime();
                         VW_STATUS.setText(reactionTimeText);
                         showEndTestNotification(reactionTimeText);
                     }
