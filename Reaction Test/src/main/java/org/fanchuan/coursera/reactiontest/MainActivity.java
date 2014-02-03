@@ -47,10 +47,14 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         //Retrieve preferences (saved best reaction time)
-        prefs = getPreferences(MODE_PRIVATE);
-        bestTime = prefs.getLong(keyBestTime, 10000); //default reaction time if not saved
-        Log.d(TAG, "bestTime: " + bestTime);
-        showBestTime();
+        try {
+            prefs = getPreferences(MODE_PRIVATE);
+            bestTime = prefs.getLong(keyBestTime, 10000); //default reaction time if not saved
+            Log.d(TAG, "bestTime: " + bestTime);
+            showBestTime();
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to get best time", e);
+        }
 
         //Each state has its own unique text description
         stateDescriptions = getResources().getStringArray(R.array.state_descriptions);
@@ -130,10 +134,14 @@ public class MainActivity extends ActionBarActivity {
         if (latestTime < bestTime) {
             bestTime = latestTime;
             Log.d(TAG, "submitLatestTime: " + latestTime);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putLong(keyBestTime, latestTime);
-            editor.commit();
-            Log.d(TAG, "Committed to preferences latestTime: " + latestTime);
+            try {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putLong(keyBestTime, latestTime);
+                editor.apply();
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to save best time", e);
+            }
+            Log.i(TAG, "Committed to preferences latestTime: " + latestTime);
         }
     }
 
