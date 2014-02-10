@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -28,8 +29,6 @@ public class MainActivity extends ActionBarActivity {
     final short STATE_DELAY = 1; // User pressed begin test button, random delay
     final short STATE_TESTING = 2; // Reaction timer is running, waiting for button press
     final short STATE_FINISHED = 3; // Congratulate user
-    private final String keyBestTime = "keyBestTime";
-    private final String keyNotification = "keyNotification";
     String[] stateDescriptions;
     final Runnable UPDATE_UI_STATUS = new Runnable() {
         public void run() {
@@ -51,8 +50,8 @@ public class MainActivity extends ActionBarActivity {
 
         //Retrieve preferences (saved best reaction time)
         try {
-            prefs = getPreferences(MODE_PRIVATE);
-            bestTime = prefs.getLong(keyBestTime, 10000); //default reaction time if not saved
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            bestTime = prefs.getLong(getResources().getString(R.string.keyBestTime), 10000); //default reaction time if not saved
             Log.d(TAG, "bestTime: " + bestTime);
             showBestTime();
         } catch (Exception e) {
@@ -131,7 +130,7 @@ public class MainActivity extends ActionBarActivity {
             Log.d(TAG, "submitLatestTime: " + latestTime);
             try {
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong(keyBestTime, latestTime);
+                editor.putLong(getResources().getString(R.string.keyBestTime), latestTime);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
                     editor.apply();
                 else
@@ -163,6 +162,7 @@ public class MainActivity extends ActionBarActivity {
                         submitLatestTime(timeElapsed);
                         showBestTime();
                         VW_STATUS.setText(reactionTimeText);
+                        String keyNotification = getResources().getString(R.string.keyNotification);
                         boolean settingNotification = prefs.getBoolean(keyNotification, false);
                         Log.d(TAG, keyNotification + ": " + String.valueOf(settingNotification));
                         if (settingNotification)

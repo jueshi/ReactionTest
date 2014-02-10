@@ -3,13 +3,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="keyNotification"
+        android:key="@string/keyNotification"
         android:title="@string/settingNotification"
         android:summary="@string/settingNotificationSummary"
         android:defaultValue="false" />
 
     <CheckBoxPreference
-        android:key="keyClearBest"
+        android:key="@string/keyClearBest"
         android:title="@string/settingClearBest"
         android:summary="@string/settingClearBestSummary"
         android:defaultValue="false" />

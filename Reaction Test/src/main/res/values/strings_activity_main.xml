@@ -8,6 +8,7 @@
     <string name="help_button">Help</string>
     <string name="help_title">Instructions</string>
     <string name="help_text">This app will measure your reaction time in milliseconds.\n\nAfter you click the button, there is a random delay so that you can\'t anticipate the test start.\nIf you click the button during this delay or change orientation, the test resets.\nWhen instructed, click the button as quickly as you can.\n\n<i>Launch icon: Wikimedia Commons</i></string>
+    <string name="keyBestTime">keyBestTime</string>
     <string-array name="state_descriptions">
         <item>Idle</item>
         <item>Wait for start...</item>
