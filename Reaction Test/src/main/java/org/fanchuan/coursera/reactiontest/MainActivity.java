@@ -83,6 +83,20 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Check preferences to see if user wants to remove best time
+        if (prefs.getBoolean(getResources().getString(R.string.keyClearBest), false)) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.remove(getResources().getString(R.string.keyBestTime));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+                editor.apply();
+            else
+                editor.commit();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
