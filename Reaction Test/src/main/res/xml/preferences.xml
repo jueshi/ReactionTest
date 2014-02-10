@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="keyNotification"
+        android:title="@string/settingNotification"
+        android:summary="@string/settingNotificationSummary"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="keyClearBest"
+        android:title="@string/settingClearBest"
+        android:summary="@string/settingClearBestSummary"
+        android:defaultValue="false" />
+
+</PreferenceScreen>

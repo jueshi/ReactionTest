@@ -3,7 +3,9 @@ package org.fanchuan.coursera.reactiontest;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -27,6 +29,7 @@ public class MainActivity extends ActionBarActivity {
     final short STATE_TESTING = 2; // Reaction timer is running, waiting for button press
     final short STATE_FINISHED = 3; // Congratulate user
     private final String keyBestTime = "keyBestTime";
+    private final String keyNotification = "keyNotification";
     String[] stateDescriptions;
     final Runnable UPDATE_UI_STATUS = new Runnable() {
         public void run() {
@@ -85,19 +88,23 @@ public class MainActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.help_action) {
-            showHelp();
-            return true;
-        } else {
-            showSettings();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                Dialog help = new Dialog(this);
+                help.setContentView(R.layout.dialog_help);
+                help.show();
+                break;
+            case R.id.action_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void showEndTestNotification(String reactionTimeText) {
         /* Generates a sample notification, notifying of the reaction time.
-        Worked in several Genymotion API18 emulators and Moto Xoom tablet but crashed on LG API10 phone (??) */
+        Worked in several Genymotion API18 emulators and Moto Xoom tablet but threw Exception on LG API10 phone (??) */
         try {
             NotificationCompat.Builder notifyReactionTimeBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.ic_launcher)
@@ -108,18 +115,6 @@ public class MainActivity extends ActionBarActivity {
         } catch (Exception e) {
             Log.e(TAG, "Unable to display score notification", e);
         }
-    }
-
-    public void showHelp() {
-        Dialog help = new Dialog(this);
-        help.setContentView(R.layout.dialog_help);
-        help.show();
-    }
-
-    public void showSettings() {
-        Dialog help = new Dialog(this);
-        help.setContentView(R.layout.dialog_settings);
-        help.show();
     }
 
     private void showBestTime() {
@@ -137,7 +132,10 @@ public class MainActivity extends ActionBarActivity {
             try {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putLong(keyBestTime, latestTime);
-                editor.apply();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+                    editor.apply();
+                else
+                    editor.commit();
             } catch (Exception e) {
                 Log.e(TAG, "Unable to save best time", e);
             }
@@ -165,7 +163,10 @@ public class MainActivity extends ActionBarActivity {
                         submitLatestTime(timeElapsed);
                         showBestTime();
                         VW_STATUS.setText(reactionTimeText);
-                        showEndTestNotification(reactionTimeText);
+                        boolean settingNotification = prefs.getBoolean(keyNotification, false);
+                        Log.d(TAG, keyNotification + ": " + String.valueOf(settingNotification));
+                        if (settingNotification)
+                            showEndTestNotification(reactionTimeText);
                     }
                 };
 
