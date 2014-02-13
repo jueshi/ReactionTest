@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -18,30 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Random;
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ReactionTimerObserver {
 
     final String TAG = MainActivity.class.getSimpleName();
-    //The activity can be in one of three states
-    final short STATE_IDLE = 0; // Idle, waiting for user to press button
-    private short activityState = STATE_IDLE;
-    final short STATE_DELAY = 1; // User pressed begin test button, random delay
-    final short STATE_TESTING = 2; // Reaction timer is running, waiting for button press
-    final short STATE_FINISHED = 3; // Congratulate user
-    String[] stateDescriptions;
-    final Runnable UPDATE_UI_STATUS = new Runnable() {
-        public void run() {
-            final TextView VW_STATUS = (TextView) findViewById(R.id.status);
-            VW_STATUS.setText(stateDescriptions[activityState]);
-        }
-    };
     //Persistent items saved to preferences; currently best reaction time only
+    private ReactionTimer reactionTimer;
     private SharedPreferences prefs;
     private long bestTime;
-    private long timeTestStart = 0;
-    private Handler handlerTest = new Handler(); //must maintain handler state, used for reaction timing
-    private Random randTimer = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +40,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         //Each state has its own unique text description
-        stateDescriptions = getResources().getStringArray(R.array.state_descriptions);
-        handlerTest.post(UPDATE_UI_STATUS);
+        this.reactionTimer = new ReactionTimer(this, getResources().getStringArray(R.array.state_descriptions));
 
         /*
         // Create the adapter that will return a fragment for each of the three
@@ -126,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(0, notifyReactionTimeBuilder.build());
         } catch (Exception e) {
-            Log.e(TAG, "Unable to display score notification", e);
+            Log.w(TAG, "Unable to display score notification", e);
         }
     }
 
@@ -137,8 +117,10 @@ public class MainActivity extends ActionBarActivity {
         vw.setText(bestTimeText);
     }
 
-    private void submitLatestTime(long latestTime) {
-        //Check latestTime versus bestTime, if so, update bestTime and persist in preferences
+    public void submitLatestTime(long latestTime, String reactionTimeText) {
+        /* Check latestTime versus bestTime, if so, update bestTime and persist in preferences
+            Check Shared Preferences: does user wants a notification displayed?
+         */
         if (latestTime < bestTime) {
             bestTime = latestTime;
             Log.d(TAG, "submitLatestTime: " + latestTime);
@@ -153,58 +135,24 @@ public class MainActivity extends ActionBarActivity {
                 Log.e(TAG, "Unable to save best time", e);
             }
             Log.i(TAG, "Committed to preferences latestTime: " + latestTime);
+            showBestTime();
         }
+        //If notification setting is on, displays whether latestTime is bestTime or not
+        String keyNotification = getResources().getString(R.string.keyNotification);
+        boolean settingNotification = prefs.getBoolean(keyNotification, false);
+        Log.d(TAG, keyNotification + ": " + String.valueOf(settingNotification));
+        if (settingNotification)
+            showEndTestNotification(reactionTimeText);
     }
 
+    public synchronized void updateUiStatus(String statusText) {
+        final TextView VW_STATUS = (TextView) findViewById(R.id.status);
+        VW_STATUS.setText(statusText);
+    }
+
+    @SuppressWarnings("unused")
     public void clickGoButton(View vw) {
-
-        final Runnable BEGIN_TEST = new Runnable() {
-            public void run() {
-                activityState = STATE_TESTING;
-                timeTestStart = SystemClock.elapsedRealtime();
-                handlerTest.post(UPDATE_UI_STATUS);
-            }
-        };
-        final Runnable END_TEST = new
-
-                Runnable() {
-                    public void run() {
-                        activityState = STATE_FINISHED;
-                        long timeElapsed = SystemClock.elapsedRealtime() - timeTestStart;
-                        final TextView VW_STATUS = (TextView) findViewById(R.id.status);
-                        String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
-                        submitLatestTime(timeElapsed);
-                        showBestTime();
-                        VW_STATUS.setText(reactionTimeText);
-                        String keyNotification = getResources().getString(R.string.keyNotification);
-                        boolean settingNotification = prefs.getBoolean(keyNotification, false);
-                        Log.d(TAG, keyNotification + ": " + String.valueOf(settingNotification));
-                        if (settingNotification)
-                            showEndTestNotification(reactionTimeText);
-                    }
-                };
-
-        switch (activityState) {
-            case STATE_IDLE:
-                activityState = STATE_DELAY;
-                handlerTest.post(UPDATE_UI_STATUS);
-                int flagDelay_ms = Math.round(1500 * randTimer.nextFloat() + 1000);
-                handlerTest.postDelayed(BEGIN_TEST, flagDelay_ms);
-                break;
-            case STATE_DELAY:
-                //If user clicks during the delay period, that resets the test.
-                handlerTest.removeCallbacksAndMessages(null);
-                activityState = STATE_IDLE;
-                handlerTest.post(UPDATE_UI_STATUS);
-                break;
-            case STATE_TESTING:
-                //Reaction testing in progress
-                handlerTest.post(END_TEST);
-                break;
-            case STATE_FINISHED:
-                activityState = STATE_IDLE;
-                handlerTest.post(UPDATE_UI_STATUS);
-                break;
-        }
+        reactionTimer.click();
     }
+
 }
