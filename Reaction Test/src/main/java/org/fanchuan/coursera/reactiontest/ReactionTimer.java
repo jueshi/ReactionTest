@@ -24,8 +24,6 @@ class ReactionTimer {
     final Runnable UPDATE_UI_STATUS = new Runnable() {
         public void run() {
             observer.updateUiStatus(stateDescriptions[activityState]);
-            //final TextView VW_STATUS = (TextView) findViewById(R.id.status);
-            //VW_STATUS.setText(stateDescriptions[activityState]);
         }
     };
 
@@ -49,17 +47,9 @@ class ReactionTimer {
                     public void run() {
                         activityState = STATE_FINISHED;
                         long timeElapsed = SystemClock.elapsedRealtime() - timeTestStart;
-                        //final TextView VW_STATUS = (TextView) findViewById(R.id.status);
                         String reactionTimeText = String.format(stateDescriptions[STATE_FINISHED], timeElapsed);
                         observer.submitLatestTime(timeElapsed, reactionTimeText);
-                        //showBestTime();
-                        //VW_STATUS.setText(reactionTimeText);
                         observer.updateUiStatus(reactionTimeText);
-                        //String keyNotification = getResources().getString(R.string.keyNotification);
-                        //boolean settingNotification = prefs.getBoolean(keyNotification, false);
-                        //Log.d(TAG, keyNotification + ": " + String.valueOf(settingNotification));
-                        //if (settingNotification)
-                        //    showEndTestNotification(reactionTimeText);
                     }
                 };
 

@@ -114,15 +114,24 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void onDestroy() {
+            /* If setRetainInstance (true), this isn't called when parent Activity is destroyed and recreated
+            due to configuration change (orientation, etc.) but only when the Activity is destroyed for good
+            (user quits app).
+             */
             super.onDestroy();
-            //Check preferences to see if user wants to remove best time
-            if (prefs.getBoolean(getResources().getString(R.string.keyClearBest), false)) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.remove(getResources().getString(R.string.keyBestTime));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
-                    editor.apply();
-                else
-                    editor.commit();
+
+            //Check to see if user wants to clear preferences
+            try {
+                if (prefs.getBoolean(getResources().getString(R.string.keyClearBest), false)) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.remove(getResources().getString(R.string.keyBestTime)); //clears best time here
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+                        editor.apply();
+                    else
+                        editor.commit();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Problem clearing preferences on exit", e);
             }
         }
 
@@ -189,8 +198,14 @@ public class MainActivity extends ActionBarActivity {
         }
 
         public synchronized void updateUiStatus(String statusText) {
-            final TextView VW_STATUS = (TextView) getView().findViewById(R.id.status);
-            VW_STATUS.setText(statusText);
+
+            //Observer method: publish reaction test status to the status area
+            try {
+                final TextView VW_STATUS = (TextView) getView().findViewById(R.id.status);
+                VW_STATUS.setText(statusText);
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to update UI status");
+            }
         }
     }
 }
