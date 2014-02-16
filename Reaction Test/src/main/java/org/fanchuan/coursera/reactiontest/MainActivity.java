@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
-    final String TAG = MainActivity.class.getSimpleName();
+    private final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +85,8 @@ public class MainActivity extends ActionBarActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
+            this.setRetainInstance(true);
+
             //Each state has its own unique text description
             this.reactionTimer = new ReactionTimer(this, getResources().getStringArray(R.array.state_descriptions));
 
@@ -102,6 +104,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            super.onCreateView(inflater, container, savedInstanceState);
             // Inflate the layout for this fragment
             return inflater.inflate(R.layout.fragment_status_area, container, false);
         }
