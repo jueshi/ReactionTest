@@ -12,7 +12,7 @@
         android:textSize="20sp"
         android:text="--"
         android:gravity="right"
-        android:layout_weight="0.10" />
+        android:layout_weight="0.40" />
 
     <TextView
         android:id="@+id/status"
@@ -21,6 +21,6 @@
         android:textSize="30sp"
         android:text="--"
         android:gravity="center_horizontal"
-        android:layout_weight="0.15" />
+        android:layout_weight="0.60" />
 
 </LinearLayout>
