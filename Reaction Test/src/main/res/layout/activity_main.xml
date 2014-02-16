@@ -10,7 +10,7 @@
         android:name="org.fanchuan.coursera.reactiontest.MainActivity$StatusAreaFragment"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        tools:layout="@layout/fragment_score_bar" />
+        tools:layout="@layout/fragment_status_area" />
 
     <Button
         android:id="@+id/go_button"
